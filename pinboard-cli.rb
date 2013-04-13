@@ -4,6 +4,7 @@
 require 'time'
 require 'yajl/json_gem'
 require 'ostruct'
+require 'optparse'
 
 CACHE_FILE = File.expand_path("~/.pinboard-cache.json")
 TOKEN_FILE = File.expand_path("~/.pinboard-token")
@@ -23,23 +24,59 @@ else
   COLORS = {}
 end
 
-def usage
-  puts <<-EOF
-usage: #{File.basename $0} [options] [keywords...]
+$options = {
+  what_to_search:  :description,
+  and_search:      true,
+  color:           true,
+  update:          false
+}
 
-  options:
-  -a      Search everything (href, title, description, tags)
-  -d      Search only description (default)
-  -e      Search only extended
-  -t      Search only tags
-  -c      Search with OR, not AND (AND is default)
-  -u      Fetch updates.
-  EOF
-  exit
+optparser = OptionParser.new do |opts|
+  opts.banner = "Usage: #{File.basename $0} [options] [keywords...]"
+
+  opts.separator ""
+  opts.separator "Configuration:"
+  opts.separator "  Put your Pinboard API key into #{TOKEN_FILE}"
+  opts.separator "  You can find that key here: https://pinboard.in/settings/password"
+  opts.separator ""
+
+  opts.on('-a', '--all', 'Search everything (href, description, extended, tags)') do
+    $options[:what_to_search] = :all
+  end
+
+  opts.on('-d', '--description', 'Search only description (default)') do
+    $options[:what_to_search] = :description
+  end
+
+  opts.on('-e', '--extended', 'Search only extended') do
+    $options[:what_to_search] = :extended
+  end
+
+  opts.on('-t', '--tags', 'Search only tags') do
+    $options[:what_to_search] = :tags
+  end
+
+  opts.on('-o', '--or', 'OR keywords') do
+    $options[:and_search] = false
+  end
+
+  opts.on('-u', '--update', 'Update if neccessary') do
+    $options[:update] = true
+  end
+
+  opts.on('-n', '--[no-]color', 'Suppress color output') do |color|
+    $options[:color] = color
+  end
 end
 
+optparser.parse!(ARGV)
+
 def colorize color, word
-  "#{COLORS[color]}#{word}#{COLORS[:clear]}"
+  if $options[:color]
+    "#{COLORS[color]}#{word}#{COLORS[:clear]}"
+  else
+    word
+  end
 end
 
 def save_cache file, cache
@@ -59,7 +96,7 @@ cached = JSON.parse(IO.read(CACHE_FILE)) rescue {}
 
 token = IO.read(TOKEN_FILE).chomp
 
-need_update = ARGV.any? {|arg| arg == '-u' } || cached.empty?
+need_update = $options[:update] || cached.empty?
 
 if need_update
   print "Checking for an update... "
@@ -82,9 +119,6 @@ end
 
 save_cache(CACHE_FILE, cached)
 
-$what_to_search = :description
-$combined       = true
-
 def all args, post, regex
   description(args, post, regex) ||
     extended(args, post, regex) ||
@@ -92,7 +126,7 @@ def all args, post, regex
 end
 
 def description args, post, regex
-  if $combined
+  if $options[:and_search]
     args.all? { |arg|
       post.description =~ /#{arg}/i
     }
@@ -102,7 +136,7 @@ def description args, post, regex
 end
 
 def extended args, post, regex
-  if $combined
+  if $options[:and_search]
     args.all? { |arg|
       post.extended =~ /#{arg}/i
     }
@@ -111,8 +145,8 @@ def extended args, post, regex
   end
 end
 
-def tag args, post, regex
-  if $combined
+def tags args, post, regex
+  if $options[:and_search]
     args.all? { |arg|
       post.tag.any? { |tag|
         tag =~ /#{arg}/
@@ -130,22 +164,6 @@ def build_regex args
   regex = /#{regex}/i
 end
 
-while ARGV[0] && ARGV[0].start_with?("-")
-  arg = ARGV.shift
-  case arg
-  when "-a"
-    $what_to_search = :all
-  when "-d"
-    $what_to_search = :description
-  when "-e"
-    $what_to_search = :extended
-  when "-t"
-    $what_to_search = :tag
-  when "-c"
-    $combined = false
-  end
-end
-
 unless ARGV.empty?
   regex = build_regex(ARGV)
 
@@ -154,7 +172,7 @@ unless ARGV.empty?
     args[:tag] = args[:tag].join(" ")
     post = Pinboard::Post.new args
 
-    if send($what_to_search, ARGV, post, regex)
+    if send($options[:what_to_search], ARGV, post, regex)
       puts "#{colorize :green, post.description}:\n\t#{post.href}"
     end
   end
