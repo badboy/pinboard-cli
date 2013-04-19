@@ -5,7 +5,13 @@ pinboard-cli
 
 ## Usage
 
-I had not time to package this as a GEM and I did not even release my version of the [pinboard ruby lib](https://github.com/badboy/pinboard) yet. But `pinboard-cli` is usable if you place the lib somewhere and adjust the paths in the script.
+I had not time to package this as a GEM and it currently only works with my own fork of the pinboard ruby lib.
+It's available in the [more-methods branch.](https://github.com/badboy/pinboard/tree/more-methods).
+
+I'm working with @ryw, the original maintainer to get my code upstream. I hope we get a new gem version released soon.
+Once that's done this will be a Gem too.
+
+But `pinboard-cli` is usable if you place the lib somewhere and adjust the paths in the script.
 
     Usage: pinboard [options] [keywords...]
 
