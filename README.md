@@ -3,16 +3,16 @@ pinboard-cli
 
 [Pinboard](https://pinboard.in/) on your command line.
 
+## Install
+
+    gem install pinboard-cli
+
 ## Usage
 
-I had not time to package this as a GEM and it currently only works with my own fork of the pinboard ruby lib.
-It's available in the [more-methods branch.](https://github.com/badboy/pinboard/tree/more-methods).
+Get your API key from <https://pinboard.in/settings/password> and place it in `~/.pinboard-token`.
+Then just run the client:
 
-I'm working with @ryw, the original maintainer to get my code upstream. I hope we get a new gem version released soon.
-Once that's done this will be a Gem too.
-
-But `pinboard-cli` is usable if you place the lib somewhere and adjust the paths in the script.
-
+    $ pinboard -h
     Usage: pinboard [options] [keywords...]
 
     Configuration:
