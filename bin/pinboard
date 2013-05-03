@@ -5,6 +5,7 @@ require 'time'
 require 'yajl/json_gem'
 require 'ostruct'
 require 'optparse'
+require 'pinboard'
 
 CACHE_FILE = File.expand_path("~/.pinboard-cache.json")
 TOKEN_FILE = File.expand_path("~/.pinboard-token")
@@ -84,13 +85,6 @@ def save_cache file, cache
     f.write cache.to_json
   }
 end
-
-if ARGV.any?{|arg| arg == '-h' || arg == '--help' }
-  usage
-end
-
-$:.unshift "/home/badboy/projects/pinboard/lib"
-require_relative "../../pinboard/lib/pinboard"
 
 cached = JSON.parse(IO.read(CACHE_FILE)) rescue {}
 
