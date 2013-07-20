@@ -17,4 +17,5 @@ Gem::Specification.new do |s|
   desc
 
   s.add_runtime_dependency 'pinboard', '~> 0.1.1'
+  s.add_runtime_dependency 'json', '~> 1.8.0'
 end
