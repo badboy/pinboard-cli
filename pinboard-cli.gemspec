@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'pinboard-cli'
-  s.version         = "0.0.1"
+  s.version         = "0.0.2"
   s.date            = Date.today.to_s
   s.summary         = "Pinboard on your commandline"
   s.homepage        = 'http://github.com/badboy/pinboard-cli'
