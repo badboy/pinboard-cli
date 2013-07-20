@@ -3,6 +3,15 @@ pinboard-cli
 
 [Pinboard](https://pinboard.in/) on your command line.
 
+## Requirements
+
+You may need to install the yajl-ruby gem.
+
+    gem install yajl-ruby
+
+* <http://rubygems.org/gems/yajl-ruby>
+* <https://github.com/brianmario/yajl-ruby>
+
 ## Install
 
     gem install pinboard-cli
