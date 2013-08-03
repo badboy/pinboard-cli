@@ -116,6 +116,7 @@ save_cache(CACHE_FILE, cached)
 def all args, post, regex
   description(args, post, regex) ||
     extended(args, post, regex) ||
+    tags(args, post, regex) ||
     post.href =~ regex
 end
 
