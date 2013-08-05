@@ -90,7 +90,7 @@ cached = JSON.parse(IO.read(CACHE_FILE)) rescue {}
 
 begin
   token = IO.read(TOKEN_FILE).chomp
-rescue
+rescue Errno::ENOENT
   puts "No token file found."
   puts "Put your Pinboard API key into #{TOKEN_FILE}"
   puts "You can find that key here: https://pinboard.in/settings/password"
